@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using BookstoreProject.Data;
+using BookstoreProject.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using BookstoreProject.Data;
-using BookstoreProject.Models;
-using Microsoft.AspNetCore.Authorization;
 
 namespace BookstoreProject.Controllers
 {
@@ -22,6 +19,12 @@ namespace BookstoreProject.Controllers
 
         // GET: Categories
         public async Task<IActionResult> Index()
+        {
+            return View(await _context.Categories.ToListAsync());
+        }
+
+        // GET: Categories/TableView
+        public async Task<IActionResult> TableView()
         {
             return View(await _context.Categories.ToListAsync());
         }
@@ -45,7 +48,7 @@ namespace BookstoreProject.Controllers
         }
 
         // GET: Categories/Create
-        [Authorize]
+        [Authorize(Roles ="admin")]
         public IActionResult Create()
         {
             ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
@@ -65,9 +68,8 @@ namespace BookstoreProject.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [Authorize]
-        [HttpGet]
         // GET: Categories/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -86,7 +88,6 @@ namespace BookstoreProject.Controllers
         // POST: Categories/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Category category)
@@ -119,8 +120,7 @@ namespace BookstoreProject.Controllers
             return View(category);
         }
 
-        [Authorize]
-        [HttpGet]
+        [Authorize(Roles = "Admin")]
         // GET: Categories/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -136,13 +136,12 @@ namespace BookstoreProject.Controllers
                 return NotFound();
             }
 
-            return View(category);
+            return RedirectToAction(nameof(Index));
         }
 
         // POST: Categories/Delete/5
         [Authorize]
-        [Route("Categories")]
-        [HttpDelete]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

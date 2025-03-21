@@ -20,3 +20,15 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.hero-container {
+    position: inherit;
+    width: 100%;
+    height: 400px; /* Adjust this height as needed */
+    background-image: url('/Images/homeimage.jpg'); /* Path to your image in wwwroot/Images */
+    background-size: cover; /* Ensure the image covers the entire container */
+    background-position: center center; /* Center the image horizontally and vertically */
+    background-repeat: no-repeat; /* Prevent repeating the background image */
+    background-attachment: fixed; /* Optionally, make the image scroll with the page */
+}
+

@@ -1,6 +1,8 @@
 ﻿using BookstoreProject.Data;
 using BookstoreProject.Models;
+using Intercom.Data;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -17,10 +19,27 @@ namespace BookstoreProject.Controllers
         }
 
         // GET: Books
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? categoryId)
         {
-            var applicationDbContext = _context.Books.Include(b => b.Category);
-            return View(await applicationDbContext.ToListAsync());
+            IQueryable<Book> books = _context.Books.Include(q => q.Category);
+
+            if (categoryId.HasValue)
+            {
+                books = books.Where(q => q.CategoryId == categoryId.Value);
+            }
+
+            return View(await books.ToListAsync());
+        }
+        public async Task<IActionResult> Search()
+        {
+            return View();
+        }
+
+        // GET: Questions/SearchResult
+        public async Task<IActionResult> SearchResult(string SearchPhrase)
+        {
+            var applicationDbContext = _context.Books.Include(q => q.Category);
+            return View("Index", await applicationDbContext.Where(x => x.Title.Contains(SearchPhrase)).ToListAsync());
         }
 
         // GET: Books/Details/5
@@ -43,7 +62,7 @@ namespace BookstoreProject.Controllers
         }
 
         // GET: Books/Create
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles ="Admin")]
         public IActionResult Create()
         {
             ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
@@ -51,7 +70,7 @@ namespace BookstoreProject.Controllers
         }
 
         // POST: Books/Create
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Title,Author,Description,CategoryId")] Book book)
@@ -62,8 +81,7 @@ namespace BookstoreProject.Controllers
         }
 
         // GET: Books/Edit/5
-        [Authorize(Roles = "Admin")]
-        [HttpGet]
+        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -71,19 +89,23 @@ namespace BookstoreProject.Controllers
                 return NotFound();
             }
 
-            var book = await _context.Books.FindAsync(id);
+            var book = await _context.Books
+                                .Include(b => b.Category)
+                                .FirstOrDefaultAsync(b => b.Id == id);
             if (book == null)
             {
                 return NotFound();
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", book.CategoryId);
+
+            ViewData.Add("CategoryId", new SelectList(_context.Categories, "Id", "Name", book.CategoryId));
+
             return View(book);
         }
 
         // POST: Books/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Author,Description,CategoryId")] Book book)
@@ -92,33 +114,27 @@ namespace BookstoreProject.Controllers
             {
                 return NotFound();
             }
-
-            if (ModelState.IsValid)
+            try
             {
-                try
-                {
-                    _context.Update(book);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!BookExists(book.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", book.CategoryId);
+                _context.Update(book);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", book.CategoryId);
-            return View(book);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!BookExists(book.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
-
         // GET: Books/Delete/5
-        [Authorize]
+        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -127,14 +143,12 @@ namespace BookstoreProject.Controllers
             }
 
             var book = await _context.Books
-                .Include(b => b.Category)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (book == null)
             {
                 return NotFound();
             }
-
-            return RedirectToAction(nameof(Index));
+            return View(book);
         }
 
         // POST: Books/Delete/5
