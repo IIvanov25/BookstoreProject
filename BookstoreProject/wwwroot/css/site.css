@@ -1,34 +1,120 @@
 html {
-  font-size: 14px;
+    font-size: 18px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 18px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
 
-.hero-container {
-    position: inherit;
-    width: 100%;
-    height: 400px; /* Adjust this height as needed */
-    background-image: url('/Images/homeimage.jpg'); /* Path to your image in wwwroot/Images */
-    background-size: cover; /* Ensure the image covers the entire container */
-    background-position: center center; /* Center the image horizontally and vertically */
-    background-repeat: no-repeat; /* Prevent repeating the background image */
-    background-attachment: fixed; /* Optionally, make the image scroll with the page */
+.button-link { /* Href */
+    display: inline-block;
+    padding: 7px 25px;
+    height: 42px;
+    width: 150px;
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
 }
 
+    .button-link:hover {
+        background-color: #57c55c;
+        color: white;
+    }
+.button-conf { /* Confirm create */
+    display: inline-block;
+    padding: 7px 25px;
+    height: 42px;
+    width: 100px;
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    border-color: #4CAF50;
+    border-width: 0px;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+}
+
+    .button-conf:hover {
+        background-color: #57c55c;
+        color: white;
+}
+
+.button-back { /* Back to list */
+    display: inline-block;
+    padding: 7px 25px;
+    height: 42px;
+    width: 150px;
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+}
+
+    .button-back:hover {
+        background-color: #57c55c;
+        color: white;
+}
+
+.button-mainfunc { /* Main functions */
+    display: inline-block;
+    padding: 7px 25px;
+    height: 42px;
+    width: 100px;
+    background-color: #dc7831;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+}
+
+    .button-mainfunc:hover {
+        background-color: #e08e4f;
+        color: white;
+    }
+
+.button-navbar { /* Navbar */
+    display: inline-block;
+    padding: 3px;
+    margin: 4px;
+    height: 42px;
+    width: 110px;
+    background-color: white;
+    color: black;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 18px;
+    border: 4px solid #e08e4f;
+    transition-duration: 0.3s;
+}
+
+    .button-navbar:hover {
+        background-color: #e08e4f;
+        color: white;
+    }

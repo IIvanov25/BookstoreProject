@@ -48,7 +48,7 @@ namespace BookstoreProject.Controllers
         }
 
         // GET: Categories/Create
-        [Authorize(Roles ="admin")]
+        [Authorize(Roles ="Admin")]
         public IActionResult Create()
         {
             ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
@@ -136,7 +136,7 @@ namespace BookstoreProject.Controllers
                 return NotFound();
             }
 
-            return RedirectToAction(nameof(Index));
+            return View(category);
         }
 
         // POST: Categories/Delete/5
