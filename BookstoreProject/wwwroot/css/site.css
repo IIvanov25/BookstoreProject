@@ -118,3 +118,9 @@ body {
         background-color: #e08e4f;
         color: white;
     }
+.imgclass {
+    display: block;
+    align-items: center;
+    max-width: 1400px;
+    max-height: 55%;
+}
