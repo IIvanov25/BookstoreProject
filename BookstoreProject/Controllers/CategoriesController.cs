@@ -82,6 +82,7 @@ namespace BookstoreProject.Controllers
             {
                 return NotFound();
             }
+
             return View(category);
         }
 

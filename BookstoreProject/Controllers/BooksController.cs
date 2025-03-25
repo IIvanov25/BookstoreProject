@@ -70,7 +70,7 @@ namespace BookstoreProject.Controllers
         }
 
         // POST: Books/Create
-        [Authorize]
+        [Authorize(Roles ="Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Title,Author,Description,CategoryId")] Book book)
@@ -105,7 +105,7 @@ namespace BookstoreProject.Controllers
         // POST: Books/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Author,Description,CategoryId")] Book book)
@@ -114,24 +114,42 @@ namespace BookstoreProject.Controllers
             {
                 return NotFound();
             }
-            try
-            {
-                ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", book.CategoryId);
-                _context.Update(book);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BookExists(book.Id))
+                try
                 {
-                    return NotFound();
+                    // Use this approach instead of _context.Update(book)
+                    var existingBook = await _context.Books.FindAsync(id);
+                    if (existingBook == null)
+                    {
+                        return NotFound();
+                    }
+
+                    // Only update the fields you want to allow changes to
+                    existingBook.Title = book.Title;
+                    existingBook.Author = book.Author;
+                    existingBook.Description = book.Description;
+                    existingBook.CategoryId = book.CategoryId;
+
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
-                else
+                catch (DbUpdateConcurrencyException ex)
                 {
-                    throw;
+                    if (!BookExists(book.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "The record you attempted to edit was modified by another user. Please refresh and try again.");
+                    }
                 }
-            }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, "An error occurred while saving. Please try again.");
+                }
+            // If we got this far, something failed; redisplay form
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", book.CategoryId);
+            return View(book);
         }
         // GET: Books/Delete/5
         [Authorize(Roles ="Admin")]
